@@ -100,7 +100,7 @@ function renderGrid () {
     return undefined
   }
 
-  similar.style.display = 'block'
+  similar.style.display = 'grid'
   similar.innerHTML = resultToCard(state.similar)
 
   console.log(resultToCard(state.similar))
