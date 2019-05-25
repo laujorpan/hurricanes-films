@@ -1,6 +1,6 @@
 import pick from 'lodash/pick'
 import { sortByPolularity, sortByVote } from './sort.js'
-import { resultToList } from './renders.js'
+import { resultToCard } from './renders.js'
 import { getMovieByTitle, getSimilarMovieById } from './services.js'
 
 getMovieByTitle('Avenger')
@@ -32,11 +32,11 @@ title.addEventListener('keyup', event => {
       }
 
       const sortedResults = results
-        .sort(sortByPolularity)
+        .sort(sortByVote)
         .slice(0, 12)
 
       document.getElementById('listFilms').style.display = 'block'
-      films.innerHTML = resultToList(sortedResults)
+      films.innerHTML = resultToCard(sortedResults)
     })
 })
 
