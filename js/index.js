@@ -1,23 +1,7 @@
 import pick from 'lodash/pick'
-
-const apiRequest = KEY => URI => (params) => {
-  const url = new URL(`https://api.themoviedb.org/3/${URI}`)
-  url.searchParams.append('language', 'es-ES')
-  url.searchParams.append('api_key', KEY)
-  Object.entries(params).forEach(([key, value]) => {
-    url.searchParams.append(key, value)
-  })
-
-  return fetch(url).then(res => res.json())
-}
-
-const mdb = apiRequest(process.env.API_KEY)
-
-const getMovieByTitle = title => mdb('search/movie')({ query: title })
-const getSimilarMovieById = movieID => apiRequest(process.env.API_KEY)(`movie/${movieID}/similar`)({})
-
-const sortByVote = (a, b) => b.popularity * b.vote_average - a.popularity * a.vote_average
-const sortByPolularity = (a, b) => b.popularity - a.popularity
+import { sortByPolularity, sortByVote } from './sort.js'
+import { resultToList } from './renders.js'
+import { getMovieByTitle, getSimilarMovieById } from './services.js'
 
 getMovieByTitle('Avenger')
   .then(({ results }) => {
@@ -27,11 +11,6 @@ getMovieByTitle('Avenger')
   })
 
 // -----------
-
-const resultToList = input =>
-  input
-    .map(elem => `<li data-id="${elem.id}">${elem.title}</li>`)
-    .join('')
 
 const title = document.getElementById('title')
 const films = document.getElementById('films')
@@ -52,13 +31,16 @@ title.addEventListener('keyup', event => {
         return undefined
       }
 
+      const sortedResults = results
+        .sort(sortByPolularity)
+        .slice(0, 12)
+
       document.getElementById('listFilms').style.display = 'block'
-      films.innerHTML = resultToList(results)
+      films.innerHTML = resultToList(sortedResults)
     })
 })
 
 // -----------
-
 getMovieByTitle('Avenger')
   .then(({ results }) => getSimilarMovieById(results[0].id))
   .then(({ results }) => {
