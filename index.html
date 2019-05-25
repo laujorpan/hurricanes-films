@@ -5,22 +5,29 @@
   <link href="css/style.css" rel="stylesheet" />
 
 </head>
-<body>
-     <div class="nes-container with-title">
-      <p class="title app-title">Hurricanes films presents...</p>
-      <br/>
-      <p class="title nes-text is-primary">¿No sabes que ver? ¿Quieres sugerencias? Dime una pelicula que te guste mucho...</p>
-          <div class="nes-field is-inline">
-            <label for="title">Pelicula:</label>
-            <input id="title" type="text" placeholder="Pon un titulo" class="nes-input">
-          </div>
-      </div>
-    <p class="title nes-text is-primary" id="errorMessage" style="display:none">¿Estas seguro que esa es tu peli favorita? No me suena.</p>
-    <div class="lists" id="listFilms"  style="display:none">
-      <p class="title nes-text is-primary" id="errorMessage">¿Cuál de estas dices que te gusta?</p>
-      <div id="films" class="movies-grid"></div>
-    </div>
-    </div>
 
-    <script src="js/index.js"></script>
+<body>
+  <div class="nes-container with-title">
+    <p class="title app-title">Hurricanes films presents...</p>
+
+    <br />
+
+    <p class="title nes-text is-primary">¿No sabes que ver? ¿Quieres sugerencias? Dime una pelicula que te guste mucho...</p>
+
+    <div class="nes-field is-inline">
+      <label for="title">Pelicula:</label>
+      <input id="title" type="text" placeholder="Pon un titulo" class="nes-input">
+    </div>
+  </div>
+
+  <p class="title nes-text is-primary" id="errorMessage" style="display:none">¿Estas seguro que esa es tu peli favorita? No me suena.</p>
+
+  <div class="lists" id="listFilms">
+    <p class="title nes-text is-primary">¿Cuál de estas dices que te gusta?</p>
+    <div id="films" class="movies-grid"></div>
+  </div>
+
+  <div id="detail"></div>
+
+  <script src="js/index.js"></script>
 </body>
