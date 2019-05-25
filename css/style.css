@@ -1,0 +1,33 @@
+html, body, pre, code, kbd, samp {
+    font-family: "Press Start 2P";
+}
+
+body {
+    color: black;
+    margin: 10px;
+}
+
+.app-title {
+    font-size: 24px !important;
+}
+
+.movie {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin: 8px;
+    position: relative;
+}
+
+.movie::before{
+    top: 16px !important;
+}
+
+.movie p{
+    margin: 14px;
+}
+
+#peliculas{
+    margin: 36px 0;
+}

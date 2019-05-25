@@ -19,21 +19,6 @@ const mdb = apiRequest(apikey)
 const getMovieByTitle = title => mdb('search/movie')({ query: title })
 const getSimilarMovieById = movieID => apiRequest(apikey)(`movie/${movieID}/similar`)({})
 
-
-// function findSimilarMovies (data){
-//     console.log('Tu pelicula es '+data.results[0])
-//     getSimilarMovieData(data.results[0].id).then(addMovie);
-// }
-
-// function getSimilarMovieData(movieId){
-//     const url= `https://api.themoviedb.org/3/movie/${movieId}/similar?api_key=${apikey}&language=es-ES&page=1`
-//     return fetch(url).then(res=>res.json())
-// }
-
-// function addMovie (data){
-//     console.log(data.results)
-// }
-
 const sortByVote = (a, b) => b.popularity * b.vote_average - a.popularity * a.vote_average
 const sortByPolularity = (a, b) => b.popularity - a.popularity
 
@@ -53,3 +38,30 @@ getMovieByTitle("Avenger")
         console.log(results.map(({ title, id, vote_average, popularity }) => ({ title, id, vote_average, popularity })))
     })
 
+//-----------
+function printResults(data){
+    console.log(data)
+    films.innerHTML =  data.map(elem=> `<li data-id="${elem.id}">${elem.title}</li>`).join('')
+}
+    const title = document.getElementById('title');
+    const films = document.getElementById('films');
+    title.addEventListener('keyup', event => {
+        const titleContent = title.value.trim();
+      
+        if (event.keyCode === 13 && titleContent) {
+            getMovieByTitle(titleContent).then(data=>{
+                if(data.results && data.results.length>0){
+                    document.getElementById("listFilms").style.display = "block";
+                    printResults(data.results)
+                }else{
+                    document.getElementById("errorMessage").style.display = "block";
+                }
+            } )
+        }else{
+            document.getElementById("listFilms").style.display = "none";
+            document.getElementById("errorMessage").style.display = "none";
+        }
+      });
+    
+//-----------
+    
