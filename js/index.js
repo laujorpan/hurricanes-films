@@ -2,8 +2,8 @@
 import debounce from 'lodash/debounce'
 
 import { sortByVote } from './sort.js'
-import { resultToCard } from './renders.js'
-import { getMovieByTitle , getSimilarMovieById} from './services.js'
+import { resultToCard, resultToDetail } from './renders.js'
+import { getMovieByTitle, getSimilarMovieById } from './services.js'
 
 // getMovieByTitle('Avenger')
 //   .then(({ results }) => {
@@ -15,21 +15,32 @@ import { getMovieByTitle , getSimilarMovieById} from './services.js'
 // -----------
 
 const title = document.getElementById('title')
-const films = document.getElementById('films')
+const errorMessage = document.getElementById('errorMessage')
+const similar = document.getElementById('films')
+const detail = document.getElementById('detail')
+
+const state = {
+  error: null,
+  similar: null,
+  detail: null
+}
 
 title.addEventListener('keyup', debounce(() => {
   const titleContent = title.value.trim()
 
   if (!titleContent) {
-    document.getElementById('listFilms').style.display = 'none'
-    document.getElementById('errorMessage').style.display = 'none'
+    state.similar = null
+    state.error = '¿Estas seguro que esa es tu peli favorita? No me suena.'
+    state.detail = null
     return undefined
   }
 
   getMovieByTitle(titleContent)
     .then(({ results }) => {
       if (!results || results.length === 0) {
-        document.getElementById('errorMessage').style.display = 'block'
+        state.error = '¿Estas seguro que esa es tu peli favorita? No me suena.'
+        state.similar = null
+        state.detail = null
         return undefined
       }
 
@@ -37,39 +48,81 @@ title.addEventListener('keyup', debounce(() => {
         .sort(sortByVote)
         .slice(0, 12)
 
-      document.getElementById('listFilms').style.display = 'block'
-      films.innerHTML = resultToCard(sortedResults)
-      let cards=document.getElementsByClassName("movie-card")
-      for(var i = 0; i < cards.length; i++) {
-        (function(index) {
-            cards[index].addEventListener("click",sendToSimilarMovies)
-        })(i);
-      }
-      
+      state.similar = sortedResults
+      state.detail = null
+      state.error = null
+
+      console.log(state)
+      render()
     })
 }, 500))
 
-// -----------
-// getMovieByTitle('Avenger')
-//   .then(({ results }) => getSimilarMovieById(results[0].id))
-//   .then(({ results }) => {
-//     results.sort(sortByVote)
-//     console.log('recomendacion')
-//     console.log(results.map(x => pick(x, [ 'title', 'id', 'vote_average', 'popularity' ])))
-//   })
+function sendToSimilarMovies (event) {
+  const elem = event.target.nodeName === 'IMG'
+    ? event.target.parentNode
+    : event.target
 
-function sendToSimilarMovies(elem){
-  getSimilarMovieById(this.dataset.id).then(({ results }) => {
+  console.log(elem)
+
+  getSimilarMovieById(elem.dataset.id)
+    .then(({ results }) => {
       if (!results || results.length === 0) {
         document.getElementById('errorMessage').style.display = 'block'
+        state.error = '¿Estas seguro que esa es tu peli favorita? No me suena.'
+        state.similar = null
         return undefined
       }
 
       const sortedResults = results
-        .sort(sortByVote)
-        .slice(0, 12)
+      state.similar = null
+      state.detail = sortedResults
+      state.error = null
+      render()
+    })
+}
 
-      document.getElementById('listFilms').style.display = 'block'
-      films.innerHTML = resultToCard(sortedResults)
+//
+// renders
+//
+function renderError () {
+  if (!state.errorMessage) {
+    errorMessage.style.display = 'none'
+    return undefined
+  }
+
+  errorMessage.style.display = 'block'
+  errorMessage.innerHTML = state.error
+}
+
+function renderGrid () {
+  if (!state.similar) {
+    similar.style.display = 'none'
+    return undefined
+  }
+
+  similar.style.display = 'grid'
+  similar.innerHTML = resultToCard(state.similar)
+
+  console.log(resultToCard(state.similar))
+
+  let cards = [ ...document.getElementsByClassName('movie-card') ]
+
+  cards.forEach(card => {
+    card.addEventListener('click', sendToSimilarMovies)
   })
+}
+
+function renderDetail () {
+  if (!state.detail) {
+    detail.style.display = 'none'
+    return undefined
+  }
+  detail.style.display = 'block'
+  detail.innerHTML = resultToDetail(state.detail)
+}
+
+function render () {
+  renderDetail()
+  renderError()
+  renderGrid()
 }
